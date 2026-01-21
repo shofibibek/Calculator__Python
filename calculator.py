@@ -33,8 +33,7 @@ def calculator():
     else:
         result = "Invalid operator"
 
-    
-    # এখানে Label আপডেট হবে
+
     result_label.config(text=f"Result: {result}")
     entry1.delete(0, tk.END)
     entry2.delete(0, tk.END)
@@ -59,8 +58,8 @@ entry3.pack(pady=5, ipady=4, ipadx=3)
 
 tk.Button(root, text="Compute", bg="grey", fg="black", command=calculator, font=("Arial", 10)).pack(pady=6)
 
-# ফলাফল দেখানোর জন্য Label
 result_label = tk.Label(root, text="Result: ", bg="white", fg="blue", font=("Arial", 14))
 result_label.pack(pady=10)
 
 root.mainloop()
+
