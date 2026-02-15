@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibek's Buddy - Complete Social Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --accent: #FD79A8;
+            --success: #00B894;
+            --danger: #FF7675;
+            --warning: #FDCB6E;
+            --dark: #2D3436;
+            --light: #DFE6E9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Navbar - Responsive */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 2px solid var(--light);
+            border-radius: 25px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-result-item:hover {
+            background: #f5f6fa;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .notification-badge {
+            position: relative;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Container - Responsive */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Auth Pages */
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            font-size: 42px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .preview-img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 12px;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            margin-top: 15px;
+            display: block;
+        }
+
+        /* Buttons - Responsive */
+        .btn {
+            width: 100%;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #55efc4);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #fab1a0);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #ffeaa7);
+            color: var(--dark);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #ff7675);
+            color: white;
+        }
+
+        /* Profile Styles - Responsive */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            height: 180px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .profile-img-container {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .profile-info {
+            padding-top: 70px;
+            text-align: center;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-username {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f6fa, #dfe4ea);
+            border-radius: 12px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--dark);
+            opacity: 0.7;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        /* Friend Request Card */
+        .friend-request-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Post Styles - Responsive */
+        .post-composer {
+            background: linear-gradient(135deg, #f5f6fa, #dfe4ea);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .post-input-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .post-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            flex-shrink: 0;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .post-author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-author-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            flex-shrink: 0;
+        }
+
+        .post-author-details {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .post-author-details h4 {
+            margin: 0;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .post-time {
+            color: var(--dark);
+            opacity: 0.6;
+            font-size: 12px;
+        }
+
+        .post-content {
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .post-image:hover {
+            transform: scale(1.02);
+        }
+
+        .delete-post-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Certificate - Responsive */
+        .certificate-container {
+            background: white;
+            padding: 40px 30px;
+            border: 12px solid;
+            border-image: linear-gradient(45deg, var(--primary), var(--accent), var(--warning), var(--success)) 1;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .cert-title {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .cert-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 25px 0;
+            text-decoration: underline;
+        }
+
+        .cert-id {
+            font-size: 18px;
+            color: var(--dark);
+            font-weight: 600;
+            margin: 15px 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #f5f6fa, #dfe4ea);
+            border-radius: 10px;
+        }
+
+        /* Modal - Responsive */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-close {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            border-radius: 15px;
+        }
+
+        /* Sidebar - Responsive */
+        .sidebar {
+            position: sticky;
+            top: 90px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .settings-section {
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f6fa, #dfe4ea);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .danger-zone {
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+            border: 2px solid var(--danger);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar {
+                max-width: 100%;
+                order: 3;
+            }
+
+            .nav-links {
+                justify-content: center;
+                order: 2;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .profile-header {
+                height: 150px;
+            }
+
+            .profile-img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+            }
+
+            .certificate-container {
+                padding: 30px 20px;
+            }
+
+            .cert-title {
+                font-size: 28px;
+            }
+
+            .cert-name {
+                font-size: 22px;
+            }
+
+            .post-input-wrapper {
+                flex-direction: column;
+            }
+
+            .friend-request-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .friend-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .friend-actions .btn-small {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 20px;
+            }
+
+            .nav-link {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .auth-header h1 {
+                font-size: 32px;
+            }
+
+            .profile-img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .profile-stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav id="mainNav" class="navbar hidden">
+        <div class="navbar-container">
+            <div class="navbar-brand">🎨 Bibek's Buddy</div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search users or certificates...">
+                <button class="search-btn" onclick="performSearch()">🔍</button>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <div class="nav-links">
+                <a class="nav-link active" onclick="showPage('feedPage')">📰</a>
+                <a class="nav-link notification-badge" onclick="showPage('friendsPage')">
+                    👥
+                    <span class="badge-count hidden" id="friendReqBadge">0</span>
+                </a>
+                <a class="nav-link" onclick="showPage('profilePage')">👤</a>
+                <a class="nav-link" onclick="showPage('certificatePage')">🏆</a>
+                <a class="nav-link" onclick="showPage('settingsPage')">⚙️</a>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- Auth Page -->
+        <div id="authPage">
+            <div class="auth-container">
+                
+                <div class="card" id="loginBox">
+                    <div class="auth-header">
+                        <h1>🎨 Bibek's Buddy</h1>
+                        <p>Welcome back! Login to continue</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPass" placeholder="Enter your password">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="processLogin()">🔓 Login</button>
+                    
+                    <p class="text-center" style="margin-top: 20px;">
+                        First time? <a href="#" class="link" onclick="toggleAuth()">Register Now</a>
+                    </p>
+                </div>
+
+                <div class="card hidden" id="regBox">
+                    <div class="auth-header">
+                        <h1>✨ Create Account</h1>
+                        <p>Join Bibek's Buddy today!</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" placeholder="Your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" placeholder="Choose a unique username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="regPhone" placeholder="Your phone number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPass" placeholder="Create a password (min 6 chars)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Profile Picture (Optional)</label>
+                        <div class="file-input-wrapper">
+                            <label for="regPic" class="file-input-label">
+                                📷 Choose Picture
+                            </label>
+                            <input type="file" id="regPic" class="file-input" accept="image/*" onchange="previewReg(this)">
+                        </div>
+                        <img id="regPreview" class="preview-img hidden">
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="processReg()">✨ Create Account</button>
+                    
+                    <p class="text-center" style="margin-top: 20px;">
+                        Have account? <a href="#" class="link" onclick="toggleAuth()">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed Page -->
+        <div id="feedPage" class="page hidden">
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">✍️ Create Post</h3>
+                <div class="post-composer">
+                    <div class="post-input-wrapper">
+                        <img id="composerAvatar" src="" class="post-avatar">
+                        <textarea id="postText" style="flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 12px;" placeholder="What's on your mind?"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="file-input-wrapper">
+                            <label for="postPic" class="file-input-label">
+                                🖼️ Add Image
+                            </label>
+                            <input type="file" id="postPic" class="file-input" accept="image/*" onchange="previewPost(this)">
+                        </div>
+                        <img id="postPreview" class="preview-img hidden">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="submitPost()">📤 Post</button>
+                </div>
+            </div>
+
+            <div id="allPosts"></div>
+        </div>
+
+        <!-- Friends Page -->
+        <div id="friendsPage" class="page hidden">
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">👥 Friend Requests</h3>
+                <div id="friendRequests"></div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">✅ My Friends</h3>
+                <div id="myFriends"></div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profilePage" class="page hidden">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="profile-header"></div>
+                <div class="profile-img-container">
+                    <img id="profileImg" src="" class="profile-img">
+                </div>
+                <div class="profile-info">
+                    <h2 class="profile-name" id="pName">Name</h2>
+                    <p class="profile-username" id="pUsername">@username</p>
+                    
+                    <div style="padding: 0 30px; text-align: left;">
+                        <p style="margin-bottom: 10px;">📱 <strong>Phone:</strong> <span id="pPhone"></span></p>
+                        <p style="margin-bottom: 10px;">📅 <strong>Joined:</strong> <span id="pDate"></span></p>
+                        <p style="margin-bottom: 10px;">🆔 <strong>Member ID:</strong> <span id="pID"></span></p>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="postCount">0</div>
+                            <div class="stat-label">Posts</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="friendCount">0</div>
+                            <div class="stat-label">Friends</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="memberDays">0</div>
+                            <div class="stat-label">Days</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-warning" style="margin-top: 20px;" onclick="showEditProfile()">✏️ Edit Profile</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">📝 My Posts</h3>
+                <div id="userPosts"></div>
+            </div>
+        </div>
+
+        <!-- Certificate Page -->
+        <div id="certificatePage" class="page hidden">
+            <div class="card">
+                <div class="certificate-container" id="cert">
+                    <div style="font-size: 50px;">🏆</div>
+                    <h1 class="cert-title">Bibek's Buddy</h1>
+                    <h2 style="font-size: 20px; margin-bottom: 30px;">Certificate of Membership</h2>
+                    <p>This certifies that</p>
+                    <h2 class="cert-name" id="certName">Name</h2>
+                    <p>Username: <strong id="certUser">@username</strong></p>
+                    <div class="cert-id">
+                        Certificate ID: <strong id="certID">CERT-XXXXXX</strong>
+                    </div>
+                    <p>is a valued and active member of</p>
+                    <p><strong>Bibek's Buddy Community</strong></p>
+                    <p style="margin-top: 30px;"><strong>Issue Date:</strong> <span id="certDate"></span></p>
+                </div>
+                <button class="btn btn-accent" onclick="downloadCert()">📥 Download Certificate</button>
+                <div style="margin-top: 15px; text-align: center; color: var(--dark); opacity: 0.7;">
+                    <small>Share your Certificate ID with others to verify your membership!</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page hidden">
+            <div class="card">
+                <h2 style="margin-bottom: 30px;">⚙️ Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>🔒 Privacy Settings</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                        <span>Profile Visibility</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="profilePrivacy" onchange="updatePrivacy()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                        When enabled, only friends can see your full profile
+                    </small>
+                </div>
+
+                <div class="settings-section">
+                    <h3>💾 Storage Info</h3>
+                    <p style="opacity: 0.8; margin-top: 10px;">
+                        Total Users: <strong id="totalUsers">0</strong><br>
+                        Total Posts: <strong id="totalPosts">0</strong><br>
+                        Your Friends: <strong id="totalFriends">0</strong>
+                    </p>
+                </div>
+
+                <div class="settings-section danger-zone">
+                    <h3>⚠️ Danger Zone</h3>
+                    <p style="margin-bottom: 15px;">
+                        <strong>Warning:</strong> This will permanently delete your account, posts, and all data!
+                    </p>
+                    <button class="btn btn-danger" onclick="deleteAccount()">🗑️ Delete Account Permanently</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Profile</h3>
+                <button class="modal-close" onclick="closeEditProfile()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editName">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="editPhone">
+                </div>
+                <div class="form-group">
+                    <label>Change Profile Picture</label>
+                    <div class="file-input-wrapper">
+                        <label for="editPic" class="file-input-label">
+                            📷 Choose New Picture
+                        </label>
+                        <input type="file" id="editPic" class="file-input" accept="image/*" onchange="previewEdit(this)">
+                    </div>
+                    <img id="editPreview" class="preview-img hidden">
+                </div>
+                <button class="btn btn-success" onclick="saveProfile()">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View User Modal -->
+    <div id="viewUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="viewUserTitle">User Profile</h3>
+                <button class="modal-close" onclick="closeViewUser()">×</button>
+            </div>
+            <div class="modal-body" id="viewUserBody"></div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <button class="modal-close" style="position: absolute; top: 20px; right: 20px; z-index: 10;" onclick="closeImageModal()">×</button>
+        <img id="modalImg" class="modal-image">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let currentUser = null;
+        let regPicData = null;
+        let postPicData = null;
+        let editPicData = null;
+
+        // Storage functions - Using localStorage as fallback/local storage
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('bibeksbuddy_users') || '[]');
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('bibeksbuddy_users', JSON.stringify(users));
+        }
+
+        function getPosts() {
+            return JSON.parse(localStorage.getItem('bibeksbuddy_posts') || '[]');
+        }
+
+        function savePosts(posts) {
+            localStorage.setItem('bibeksbuddy_posts', JSON.stringify(posts));
+        }
+
+        function getFriendRequests() {
+            return JSON.parse(localStorage.getItem('bibeksbuddy_friend_requests') || '[]');
+        }
+
+        function saveFriendRequests(requests) {
+            localStorage.setItem('bibeksbuddy_friend_requests', JSON.stringify(requests));
+        }
+
+        function generateCertID() {
+            return 'CERT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function getStorageSize() {
+            let total = 0;
+            for(let key in localStorage) {
+                if(localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return (total / 1024).toFixed(2);
+        }
+
+        function updateStorageInfo() {
+            const users = getUsers();
+            const posts = getPosts();
+            const friends = currentUser.friends || [];
+            
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalPosts').textContent = posts.length;
+            document.getElementById('totalFriends').textContent = friends.length;
+        }
+
+        function updateFriendBadge() {
+            const requests = getFriendRequests();
+            const myRequests = requests.filter(r => r.to === currentUser.username && r.status === 'pending');
+            const badge = document.getElementById('friendReqBadge');
+            
+            if(myRequests.length > 0) {
+                badge.textContent = myRequests.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if(pageId === 'profilePage') loadUserPosts();
+            if(pageId === 'certificatePage') loadCert();
+            if(pageId === 'settingsPage') updateStorageInfo();
+            if(pageId === 'friendsPage') loadFriends();
+        }
+
+        function toggleAuth() {
+            document.getElementById('loginBox').classList.toggle('hidden');
+            document.getElementById('regBox').classList.toggle('hidden');
+        }
+
+        function previewReg(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    regPicData = e.target.result;
+                    document.getElementById('regPreview').src = e.target.result;
+                    document.getElementById('regPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewPost(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    postPicData = e.target.result;
+                    document.getElementById('postPreview').src = e.target.result;
+                    document.getElementById('postPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewEdit(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editPicData = e.target.result;
+                    document.getElementById('editPreview').src = e.target.result;
+                    document.getElementById('editPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function processReg() {
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+
+            if(!name || !username || !phone || !pass) {
+                alert('❌ Please fill all required fields!');
+                return;
+            }
+
+            if(username.length < 3) {
+                alert('❌ Username must be at least 3 characters!');
+                return;
+            }
+
+            if(pass.length < 6) {
+                alert('❌ Password must be at least 6 characters!');
+                return;
+            }
+
+            const users = getUsers();
+            if(users.find(u => u.username === username)) {
+                alert('❌ Username already taken! Choose another.');
+                return;
+            }
+
+            const id = "MEM-" + Math.floor(1000 + Math.random() * 9000);
+            const certID = generateCertID();
+            const pic = regPicData || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=6C5CE7&color=fff&size=200';
+            
+            const user = {
+                full_name: name,
+                username: username,
+                phone: phone,
+                password: pass,
+                unique_id: id,
+                cert_id: certID,
+                profile_pic: pic,
+                registration_date: new Date().toLocaleDateString('en-US'),
+                friends: [],
+                profile_private: false
+            };
+
+            users.push(user);
+            saveUsers(users);
+
+            alert(`✅ Account Created!\n\n👤 Name: ${name}\n🆔 ID: ${id}\n📝 Username: ${username}\n🏆 Certificate ID: ${certID}\n\nNow login!`);
+            location.reload();
+        }
+
+        function processLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+
+            if(!username || !pass) {
+                alert('❌ Enter username and password!');
+                return;
+            }
+
+            const users = getUsers();
+            const user = users.find(u => u.username === username);
+
+            if(!user) {
+                alert('❌ Username not found!');
+                return;
+            }
+
+            if(user.password !== pass) {
+                alert('❌ Wrong password!');
+                return;
+            }
+
+            currentUser = user;
+            startApp();
+        }
+
+        function startApp() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('mainNav').classList.remove('hidden');
+            showPage('feedPage');
+            loadProfile();
+            loadFeed();
+            updateFriendBadge();
+            document.getElementById('composerAvatar').src = currentUser.profile_pic;
+        }
+
+        function loadProfile() {
+            document.getElementById('pName').textContent = currentUser.full_name;
+            document.getElementById('pUsername').textContent = '@' + currentUser.username;
+            document.getElementById('pPhone').textContent = currentUser.phone;
+            document.getElementById('pID').textContent = currentUser.unique_id;
+            document.getElementById('pDate').textContent = currentUser.registration_date;
+            document.getElementById('profileImg').src = currentUser.profile_pic;
+            document.getElementById('friendCount').textContent = (currentUser.friends || []).length;
+            document.getElementById('profilePrivacy').checked = currentUser.profile_private || false;
+
+            const regDate = new Date(currentUser.registration_date);
+            const days = Math.floor((new Date() - regDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('memberDays').textContent = days;
+        }
+
+        function showEditProfile() {
+            document.getElementById('editName').value = currentUser.full_name;
+            document.getElementById('editPhone').value = currentUser.phone;
+            document.getElementById('editPic').value = '';
+            document.getElementById('editPreview').classList.add('hidden');
+            editPicData = null;
+            document.getElementById('editProfileModal').classList.add('active');
+        }
+
+        function closeEditProfile() {
+            document.getElementById('editProfileModal').classList.remove('active');
+        }
+
+        function saveProfile() {
+            const newName = document.getElementById('editName').value.trim();
+            const newPhone = document.getElementById('editPhone').value.trim();
+
+            if(!newName || !newPhone) {
+                alert('❌ Please fill all fields!');
+                return;
+            }
+
+            const users = getUsers();
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+
+            if(userIndex !== -1) {
+                users[userIndex].full_name = newName;
+                users[userIndex].phone = newPhone;
+                if(editPicData) {
+                    users[userIndex].profile_pic = editPicData;
+                }
+
+                saveUsers(users);
+                currentUser = users[userIndex];
+
+                // Update posts
+                const posts = getPosts();
+                posts.forEach(post => {
+                    if(post.username === currentUser.username) {
+                        post.full_name = newName;
+                        if(editPicData) post.profile_pic = editPicData;
+                    }
+                });
+                savePosts(posts);
+
+                alert('✅ Profile updated!');
+                closeEditProfile();
+                loadProfile();
+                loadFeed();
+                loadUserPosts();
+                document.getElementById('composerAvatar').src = currentUser.profile_pic;
+            }
+        }
+
+        function updatePrivacy() {
+            const isPrivate = document.getElementById('profilePrivacy').checked;
+            const users = getUsers();
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+
+            if(userIndex !== -1) {
+                users[userIndex].profile_private = isPrivate;
+                saveUsers(users);
+                currentUser.profile_private = isPrivate;
+                alert(isPrivate ? '🔒 Profile is now private' : '🔓 Profile is now public');
+            }
+        }
+
+        function submitPost() {
+            const text = document.getElementById('postText').value.trim();
+            
+            if(!text && !postPicData) {
+                alert('❌ Write something or add image!');
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                username: currentUser.username,
+                full_name: currentUser.full_name,
+                profile_pic: currentUser.profile_pic,
+                post_content: text,
+                post_image: postPicData || '',
+                post_date: new Date().toLocaleString('en-US')
+            };
+
+            const posts = getPosts();
+            posts.push(post);
+            savePosts(posts);
+
+            document.getElementById('postText').value = "";
+            document.getElementById('postPic').value = "";
+            document.getElementById('postPreview').classList.add('hidden');
+            postPicData = null;
+            
+            alert('✅ Posted!');
+            loadFeed();
+        }
+
+        function loadFeed() {
+            const posts = getPosts();
+            const container = document.getElementById('allPosts');
+            container.innerHTML = "";
+
+            if(posts.length === 0) {
+                container.innerHTML = '<div class="card text-center"><h3>📭 No posts yet</h3></div>';
+                return;
+            }
+
+            let myPostCount = 0;
+            posts.slice().reverse().forEach(post => {
+                if(post.username === currentUser.username) myPostCount++;
+
+                const div = document.createElement('div');
+                div.className = 'post-card';
+                div.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-author-info">
+                            <img src="${post.profile_pic}" class="post-author-avatar" onclick="viewUserProfile('${post.username}')">
+                            <div class="post-author-details">
+                                <h4>${post.full_name}</h4>
+                                <span class="post-time">@${post.username} • ${post.post_date}</span>
+                            </div>
+                        </div>
+                        ${post.username === currentUser.username ? `<button class="delete-post-btn" onclick="deletePost(${post.id})">🗑️</button>` : ''}
+                    </div>
+                    <div class="post-content">${post.post_content || ''}</div>
+                    ${post.post_image ? `<img src="${post.post_image}" class="post-image" onclick="openImageModal('${post.post_image}')">` : ''}
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('postCount').textContent = myPostCount;
+        }
+
+        function loadUserPosts() {
+            const posts = getPosts().filter(p => p.username === currentUser.username);
+            const container = document.getElementById('userPosts');
+            container.innerHTML = "";
+
+            if(posts.length === 0) {
+                container.innerHTML = '<p class="text-center">📭 No posts yet</p>';
+                return;
+            }
+
+            posts.slice().reverse().forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'post-card';
+                div.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-author-info">
+                            <img src="${post.profile_pic}" class="post-author-avatar">
+                            <div class="post-author-details">
+                                <h4>${post.full_name}</h4>
+                                <span class="post-time">${post.post_date}</span>
+                            </div>
+                        </div>
+                        <button class="delete-post-btn" onclick="deletePost(${post.id})">🗑️</button>
+                    </div>
+                    <div class="post-content">${post.post_content || ''}</div>
+                    ${post.post_image ? `<img src="${post.post_image}" class="post-image" onclick="openImageModal('${post.post_image}')">` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deletePost(postId) {
+            if(!confirm('Delete this post?')) return;
+
+            let posts = getPosts();
+            posts = posts.filter(p => p.id !== postId);
+            savePosts(posts);
+
+            alert('✅ Deleted!');
+            loadFeed();
+            if(!document.getElementById('profilePage').classList.contains('hidden')) {
+                loadUserPosts();
+            }
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('searchResults');
+
+            if(!query) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const users = getUsers();
+            const results = users.filter(u => 
+                u.username.toLowerCase().includes(query) || 
+                u.full_name.toLowerCase().includes(query) ||
+                u.cert_id.toLowerCase().includes(query) ||
+                u.unique_id.toLowerCase().includes(query)
+            );
+
+            resultsContainer.innerHTML = "";
+
+            if(results.length === 0) {
+                resultsContainer.innerHTML = '<div style="padding: 20px; text-align: center;">No results found</div>';
+            } else {
+                results.forEach(user => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.onclick = () => viewUserProfile(user.username);
+                    div.innerHTML = `
+                        <img src="${user.profile_pic}" class="friend-avatar">
+                        <div style="flex: 1;">
+                            <strong>${user.full_name}</strong>
+                            <div style="font-size: 12px; color: #888;">@${user.username}</div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            }
+
+            resultsContainer.classList.add('active');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', performSearch);
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.search-bar')) {
+                document.getElementById('searchResults').classList.remove('active');
+            }
+        });
+
+        function viewUserProfile(username) {
+            const users = getUsers();
+            const user = users.find(u => u.username === username);
+
+            if(!user) return;
+
+            const isFriend = (currentUser.friends || []).includes(username);
+            const isPrivate = user.profile_private && !isFriend && user.username !== currentUser.username;
+
+            const requests = getFriendRequests();
+            const pendingRequest = requests.find(r => 
+                r.from === currentUser.username && r.to === username && r.status === 'pending'
+            );
+
+            let content = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${user.profile_pic}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary);">
+                    <h3 style="margin-top: 15px;">${user.full_name}</h3>
+                    <p style="color: var(--primary);">@${user.username}</p>
+            `;
+
+            if(!isPrivate) {
+                content += `
+                    <p>📱 ${user.phone}</p>
+                    <p>📅 Joined: ${user.registration_date}</p>
+                    <p>🆔 ${user.unique_id}</p>
+                    <p>👥 ${(user.friends || []).length} Friends</p>
+                `;
+            } else {
+                content += `<p style="color: var(--warning);">🔒 This profile is private</p>`;
+            }
+
+            content += `</div>`;
+
+            if(user.username !== currentUser.username) {
+                if(!isFriend && !pendingRequest) {
+                    content += `<button class="btn btn-success" onclick="sendFriendRequest('${username}')">➕ Add Friend</button>`;
+                } else if(pendingRequest) {
+                    content += `<button class="btn btn-warning" disabled>⏳ Request Pending</button>`;
+                } else {
+                    content += `<button class="btn btn-danger" onclick="removeFriend('${username}')">➖ Remove Friend</button>`;
+                }
+            }
+
+            document.getElementById('viewUserTitle').textContent = user.full_name;
+            document.getElementById('viewUserBody').innerHTML = content;
+            document.getElementById('viewUserModal').classList.add('active');
+            document.getElementById('searchResults').classList.remove('active');
+        }
+
+        function closeViewUser() {
+            document.getElementById('viewUserModal').classList.remove('active');
+        }
+
+        function sendFriendRequest(toUsername) {
+            const requests = getFriendRequests();
+            requests.push({
+                id: Date.now(),
+                from: currentUser.username,
+                to: toUsername,
+                status: 'pending',
+                date: new Date().toLocaleString('en-US')
+            });
+            saveFriendRequests(requests);
+            alert('✅ Friend request sent!');
+            closeViewUser();
+        }
+
+        function loadFriends() {
+            const requests = getFriendRequests();
+            const myRequests = requests.filter(r => r.to === currentUser.username && r.status === 'pending');
+            const reqContainer = document.getElementById('friendRequests');
+
+            reqContainer.innerHTML = "";
+            if(myRequests.length === 0) {
+                reqContainer.innerHTML = '<p class="text-center">No pending requests</p>';
+            } else {
+                myRequests.forEach(req => {
+                    const users = getUsers();
+                    const fromUser = users.find(u => u.username === req.from);
+                    if(fromUser) {
+                        const div = document.createElement('div');
+                        div.className = 'friend-request-card';
+                        div.innerHTML = `
+                            <img src="${fromUser.profile_pic}" class="friend-avatar">
+                            <div class="friend-info">
+                                <strong>${fromUser.full_name}</strong>
+                                <div style="font-size: 12px; color: #888;">@${fromUser.username}</div>
+                            </div>
+                            <div class="friend-actions">
+                                <button class="btn btn-success btn-small" onclick="acceptRequest(${req.id})">✅ Accept</button>
+                                <button class="btn btn-danger btn-small" onclick="rejectRequest(${req.id})">❌ Reject</button>
+                            </div>
+                        `;
+                        reqContainer.appendChild(div);
+                    }
+                });
+            }
+
+            const friends = currentUser.friends || [];
+            const friendsContainer = document.getElementById('myFriends');
+            friendsContainer.innerHTML = "";
+
+            if(friends.length === 0) {
+                friendsContainer.innerHTML = '<p class="text-center">No friends yet</p>';
+            } else {
+                const users = getUsers();
+                friends.forEach(friendUsername => {
+                    const friend = users.find(u => u.username === friendUsername);
+                    if(friend) {
+                        const div = document.createElement('div');
+                        div.className = 'friend-request-card';
+                        div.innerHTML = `
+                            <img src="${friend.profile_pic}" class="friend-avatar" onclick="viewUserProfile('${friend.username}')">
+                            <div class="friend-info">
+                                <strong>${friend.full_name}</strong>
+                                <div style="font-size: 12px; color: #888;">@${friend.username}</div>
+                            </div>
+                            <button class="btn btn-danger btn-small" onclick="removeFriend('${friend.username}')">Remove</button>
+                        `;
+                        friendsContainer.appendChild(div);
+                    }
+                });
+            }
+
+            updateFriendBadge();
+        }
+
+        function acceptRequest(reqId) {
+            const requests = getFriendRequests();
+            const reqIndex = requests.findIndex(r => r.id === reqId);
+
+            if(reqIndex !== -1) {
+                const req = requests[reqIndex];
+                requests[reqIndex].status = 'accepted';
+                saveFriendRequests(requests);
+
+                const users = getUsers();
+                const userIndex = users.findIndex(u => u.username === currentUser.username);
+                const friendIndex = users.findIndex(u => u.username === req.from);
+
+                if(userIndex !== -1 && friendIndex !== -1) {
+                    if(!users[userIndex].friends) users[userIndex].friends = [];
+                    if(!users[friendIndex].friends) users[friendIndex].friends = [];
+                    
+                    users[userIndex].friends.push(req.from);
+                    users[friendIndex].friends.push(currentUser.username);
+                    
+                    saveUsers(users);
+                    currentUser = users[userIndex];
+
+                    alert('✅ Friend added!');
+                    loadFriends();
+                    loadProfile();
+                }
+            }
+        }
+
+        function rejectRequest(reqId) {
+            let requests = getFriendRequests();
+            requests = requests.filter(r => r.id !== reqId);
+            saveFriendRequests(requests);
+            alert('❌ Request rejected');
+            loadFriends();
+        }
+
+        function removeFriend(friendUsername) {
+            if(!confirm('Remove this friend?')) return;
+
+            const users = getUsers();
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            const friendIndex = users.findIndex(u => u.username === friendUsername);
+
+            if(userIndex !== -1 && friendIndex !== -1) {
+                users[userIndex].friends = (users[userIndex].friends || []).filter(f => f !== friendUsername);
+                users[friendIndex].friends = (users[friendIndex].friends || []).filter(f => f !== currentUser.username);
+                
+                saveUsers(users);
+                currentUser = users[userIndex];
+
+                alert('✅ Friend removed');
+                loadFriends();
+                loadProfile();
+                closeViewUser();
+            }
+        }
+
+        function deleteAccount() {
+            if(prompt('⚠️ Type DELETE') !== 'DELETE') return;
+
+            let users = getUsers();
+            users = users.filter(u => u.username !== currentUser.username);
+            saveUsers(users);
+
+            let posts = getPosts();
+            posts = posts.filter(p => p.username !== currentUser.username);
+            savePosts(posts);
+
+            let requests = getFriendRequests();
+            requests = requests.filter(r => r.from !== currentUser.username && r.to !== currentUser.username);
+            saveFriendRequests(requests);
+
+            users.forEach(user => {
+                if(user.friends && user.friends.includes(currentUser.username)) {
+                    user.friends = user.friends.filter(f => f !== currentUser.username);
+                }
+            });
+            saveUsers(users);
+
+            alert('✅ Account deleted!');
+            location.reload();
+        }
+
+        function loadCert() {
+            document.getElementById('certName').textContent = currentUser.full_name;
+            document.getElementById('certUser').textContent = '@' + currentUser.username;
+            document.getElementById('certID').textContent = currentUser.cert_id;
+            document.getElementById('certDate').textContent = new Date().toLocaleDateString('en-US');
+        }
+
+        async function downloadCert() {
+            try {
+                const canvas = await html2canvas(document.getElementById('cert'), {
+                    scale: 2,
+                    backgroundColor: '#ffffff'
+                });
+                const link = document.createElement('a');
+                link.download = 'Certificate_' + currentUser.username + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                alert('✅ Downloaded!');
+            } catch (error) {
+                alert('❌ Failed!');
+            }
+        }
+
+        function openImageModal(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        function logout() {
+            if(confirm('Logout?')) location.reload();
+        }
+    </script>
+</body>
+</html>
